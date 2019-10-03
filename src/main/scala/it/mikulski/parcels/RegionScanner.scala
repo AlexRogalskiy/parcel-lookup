@@ -12,15 +12,17 @@ import scala.io.Source
 object RegionScanner extends App with DbHandler {
 
   val municipalities = Seq(
-    //"https://geoportal360.pl/12/wielicki/niepolomice-121904",
+    //"https://geoportal360.pl/12/krakow/krakow-miasto-126101",
+    "https://geoportal360.pl/12/wielicki/niepolomice-121904",
     //"https://geoportal360.pl/12/wielicki/gdow-121902",
-    //"https://geoportal360.pl/12/wielicki/biskupice-121901",
+    "https://geoportal360.pl/12/wielicki/biskupice-121901",
     //"https://geoportal360.pl/12/wielicki/klaj-121903",
     "https://geoportal360.pl/12/wielicki/wieliczka-121905"
   )
 
   val regions = municipalities.flatMap { m =>
-    //Thread.sleep(2000)
+    Thread.sleep(1000)
+    println(m)
     getRegionLinks(m)
   }.sorted
 
@@ -29,6 +31,7 @@ object RegionScanner extends App with DbHandler {
   Await.ready(createSchemaIfMissing, 1.minute)
 
   regions.foreach { regionLink =>
+    Thread.sleep(1000)
     println(regionLink)
     val doc = Jsoup.connect(regionLink).maxBodySize(0).get()
 
@@ -43,7 +46,7 @@ object RegionScanner extends App with DbHandler {
     } yield ()
     Await.ready(f, 10.minute)
     val t1 = System.currentTimeMillis()
-    println(s"  time taken: ${(t1 - t0)/1000}s")
+    println(s"  time taken: ${(t1 - t0)}ms")
   }
 
 
